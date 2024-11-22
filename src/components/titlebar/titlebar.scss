@@ -1,0 +1,15 @@
+.Titlebar {
+  .alert {
+    padding: 0 !important;
+  }
+  .cpdaterangepicker {
+    width: 100%;
+    .vue-daterange-picker {
+      padding: 0;
+      width: 100%;
+      .reportrange-text {
+        border: 0;
+      }
+    }
+  }
+}

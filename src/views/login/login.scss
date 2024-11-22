@@ -1,0 +1,14 @@
+.min-vh-100 {
+  min-height: 100vh;
+}
+
+.login-card {
+  width: 50%;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+  .login-card {
+    width: 100%;
+  }
+}
