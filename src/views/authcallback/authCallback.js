@@ -8,7 +8,6 @@ export default {
   mounted() {
     const ret = this.$route.query.ret;
     if (ret) {
-      console.log(JSON.parse(ret));
       this.setAuth(JSON.parse(ret));
 
       this.$router.push({ name: 'dashboard' });

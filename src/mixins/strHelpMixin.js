@@ -21,10 +21,15 @@ export default {
         monthly: 'Mensalmente',
         yearly: 'Anualmente',
         income: 'Entrada',
-        expense: 'Saída'
+        expense: 'Saída',
+        pending: 'Pendente',
+        scheduled: 'Agendado',
+        paid: 'Pago',
+        canceled: 'Cancelado',
+        overdue: 'Vencido'
       };
 
-      return translations[str] || 'Método desconhecido';
+      return translations[str] || str;
     },
     validateFields(form, fields) {
       const errors = [];

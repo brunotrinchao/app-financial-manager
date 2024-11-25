@@ -30,4 +30,4 @@
 
 <script src="./header.js" />
 
-<e scoped src="./header.scss" />
+<style scoped lang="scss" src="./header.scss" />

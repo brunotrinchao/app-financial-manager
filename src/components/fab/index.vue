@@ -15,10 +15,7 @@
       </RouterLink> -->
     </div>
 
-    <b-modal ref="modalForm" id="formAdd" :title="modalTitle" v-if="selectedComponent" :hide-footer="true">
-      <component :is="selectedComponent" :data="selectedItem" />
-      <template slot="modal-footer"></template>
-    </b-modal>
+    <ModalForm :title="modalTitle" size="md" :component="selectedComponent" :data="selectedItem" />
   </div>
 </template>
 

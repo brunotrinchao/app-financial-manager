@@ -50,41 +50,47 @@ export default {
       ];
     },
     getCategories() {
+      const categories = Array.isArray(this.categories) ? this.categories : [];
       return [
         { value: null, text: 'Selecione' },
-        ...this.categories?.map((el) => {
+        ...categories.map((el) => {
           return { value: el.id, text: el.name };
         })
       ];
     },
     getTypes() {
+      const type = Array.isArray(this.settings?.type) ? this.settings?.type : [];
+
       return [
         { value: null, text: 'Selecione' },
-        ...this.settings?.type?.map((el) => {
+        ...type.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
     },
     getMethods() {
+      const method = Array.isArray(this.settings?.method) ? this.settings?.method : [];
       return [
         { value: null, text: 'Selecione' },
-        ...this.settings?.method?.map((el) => {
+        ...method.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
     },
     getSources() {
+      const source = Array.isArray(this.settings?.source) ? this.settings?.source : [];
       return [
         { value: null, text: 'Selecione' },
-        ...this.settings?.source?.map((el) => {
+        ...source.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
     },
     getFrequency() {
+      const frequency = Array.isArray(this.settings?.frequency) ? this.settings?.frequency : [];
       return [
         { value: null, text: 'Selecione' },
-        ...this.settings?.frequency?.map((el) => {
+        ...frequency.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
@@ -115,11 +121,11 @@ export default {
     async onSubmit(event) {
       event.preventDefault();
       if (this.validateFields(this.form, this.validations)) {
-        console.log(this.form);
-        const ret = await this.storeTransactions(this.form);
-        console.log(ret);
-        EventBus.$emit('close-all-modals');
-        EventBus.emit('update-list');
+        await this.storeTransactions(this.form);
+        EventBus.$emit('update-list');
+        setTimeout(() => {
+          this.$modalManager.hide('formAddTransaction');
+        }, 300);
       }
     },
 

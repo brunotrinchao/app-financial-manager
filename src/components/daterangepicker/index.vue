@@ -41,26 +41,18 @@
         size="lg"
       /> -->
     </b-form>
-    <date-range-picker v-model="dateRange" @update="updateValues" />
-    <!-- <date-range-picker
+    <!-- <date-range-picker v-model="dateRange" @update="updateValues" /> -->
+    <date-range-picker
       ref="picker"
-      :opens="opens"
-      :locale-data="localeData"
-      :minDate="minDate"
-      :maxDate="maxDate"
-      :singleDatePicker="singleDatePicker"
+      :locale-data="locale"
       :timePicker="false"
-      :timePicker24Hour="timePicker24Hour"
-      :showWeekNumbers="showWeekNumbers"
       :showDropdowns="true"
-      :autoApply="true"
       v-model="dateRange"
-      :ranges="false"
+      :ranges="objRanges"
       @update="updateValues"
-      :linkedCalendars="linkedCalendars"
     >
-      <template v-slot:input="picker" style="min-width: 350px">{{ picker | formatDateRange }}</template>
-    </date-range-picker> -->
+      <template v-slot:input="picker" style="min-width: 350px">{{ formatDateRange(picker) }}</template>
+    </date-range-picker>
   </div>
 </template>
 

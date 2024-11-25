@@ -1,6 +1,5 @@
 export default {
   startOfDay(date) {
-    console.log('chegou');
     date.setHours(0, 0, 0, 0);
     return date;
   },

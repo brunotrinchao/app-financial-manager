@@ -22,11 +22,10 @@ export default {
           commit('SET_TRANSACTIONS', data);
           return data.data;
         }
-        return null;
+        return [];
       });
     },
     async storeTransactions(_, params) {
-      console.log(params);
       return await api.inserir('/transactions', params).then((data) => {
         return data.data;
       });

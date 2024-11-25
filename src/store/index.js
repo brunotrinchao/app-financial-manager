@@ -85,6 +85,7 @@ export default new Vuex.Store({
           commit('SET_TOKEN', data.access_token);
           commit('SET_USER', data.user);
           sessionStorage.setItem(process.env.VUE_APP_SESSION_KEY, data.access_token);
+          sessionStorage.setItem(process.env.VUE_APP_SESSION_USER, JSON.stringify(data.user));
         }
         return data.data;
       });
@@ -95,6 +96,7 @@ export default new Vuex.Store({
           commit('SET_TOKEN', data.access_token);
           commit('SET_USER', data.user);
           sessionStorage.setItem(process.env.VUE_APP_SESSION_KEY, data.access_token);
+          sessionStorage.setItem(process.env.VUE_APP_SESSION_USER, data.user);
         }
         return data.data;
       });
@@ -103,22 +105,30 @@ export default new Vuex.Store({
       commit('SET_TOKEN', null);
       commit('SET_USER', null);
       sessionStorage.removeItem(process.env.VUE_APP_SESSION_KEY);
+      sessionStorage.removeItem(process.env.VUE_APP_SESSION_USER);
     },
     checkAuthentication({ commit }) {
       const tokenSession = sessionStorage.getItem(process.env.VUE_APP_SESSION_KEY);
+      const userSession = sessionStorage.getItem(process.env.VUE_APP_SESSION_USER);
       if (tokenSession) {
         commit('SET_TOKEN', tokenSession);
       }
+      if (userSession) {
+        commit('SET_USER', JSON.parse(userSession));
+      }
     },
     setFilters({ commit }, filters) {
-      // Validação ou formatação de filtros pode ser feita aqui, se necessário
-      commit('SET_FILTERS', filters);
+      filters.forEach((filter) => {
+        commit('SET_FILTERS', filter);
+      });
+      // commit('SET_FILTERS', filters);
     },
     setAuth({ commit }, data) {
       // Validação ou formatação de filtros pode ser feita aqui, se necessário
       commit('SET_TOKEN', data.access_token);
       commit('SET_USER', data.user);
       sessionStorage.setItem(process.env.VUE_APP_SESSION_KEY, data.access_token);
+      sessionStorage.setItem(process.env.VUE_APP_SESSION_USER, data.user);
     }
   },
   getters: {

@@ -9,6 +9,8 @@ import 'moment/locale/pt-br';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 
 import 'vue2-daterange-picker/dist/vue2-daterange-picker.css';
 
@@ -21,8 +23,8 @@ Vue.use(SmartTable);
 // eslint-disable-next-line vue/component-definition-name-casing
 Vue.component('apexchart', VueApexCharts);
 
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+import ModalPlugin from '@/plugins/modal/modal.js';
+Vue.use(ModalPlugin);
 
 import VueCurrencyInput from 'vue-currency-input';
 const pluginOptions = {

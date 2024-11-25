@@ -1,25 +1,26 @@
-import { mapState } from 'vuex';
 import { EventBus } from '@/event-bus';
-import ModalForm from '@/components/modalform';
 
 export default {
-  name: 'Fab',
-  components: { ModalForm },
-  data() {
-    return {
-      selectedComponent: null,
-      selectedItem: null,
-      modalTitle: ''
-    };
-  },
-
-  computed: {
-    menuFieltered() {
-      return this.menu.filter((el) => el.add);
+  name: 'ModalForm',
+  props: {
+    title: {
+      type: String,
+      default: 'Modal'
     },
-    ...mapState(['menu'])
+    size: {
+      type: String,
+      default: 'md',
+      validator(value) {
+        const validSizes = ['xl', 'lg', 'md', 'sm'];
+        return validSizes.includes(value);
+      }
+    },
+    component: null,
+    selectedItem: null
   },
-
+  data() {
+    return {};
+  },
   mounted() {
     EventBus.$on('close-all-modals', () => {
       this.$refs['modalForm'].hide();
@@ -28,7 +29,6 @@ export default {
       this.resetModal();
     });
   },
-
   beforeDestroy() {
     EventBus.$off('close-all-modals'); // Evita vazamento de memória
   },
@@ -39,15 +39,9 @@ export default {
       this.selectedComponent = item.component; // Nome do componente a renderizar
       this.selectedItem = item; // Dados do item selecionado (se necessário)
       this.modalTitle = item.name; // Define o título do modal
-
-      this.$modalManager.show({
-        id: 'formAddTransaction',
-        title: this.modalTitle,
-        size: 'md',
-        component: this.selectedComponent, // Nome do componente Vue
-        selectedItem: this.selectedItem // Dados passados para o componente
-      });
-
+      setTimeout(() => {
+        this.$bvModal.show('formAdd');
+      }, 500);
       // this.$router.push({ path: item.link });
     },
     resetModal() {

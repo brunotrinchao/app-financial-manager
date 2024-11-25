@@ -15,6 +15,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { Header, Titlebar, Preloader, Fab } from '@/components';
+
 export default {
   name: 'App',
   components: {
