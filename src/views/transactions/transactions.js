@@ -27,34 +27,6 @@ export default {
         method: null,
         status: null
       },
-      options: {
-        category: [
-          { text: 'Alimentação', value: 1 },
-          { text: 'Moradia', value: 1 },
-          { text: 'Transporte', value: 1 },
-          { text: 'Educação', value: 1 },
-          { text: 'Lazer', value: 1 },
-          { text: 'Saúde', value: 1 },
-          { text: 'Investimentos', value: 1 },
-          { text: 'Contas e Serviços', value: 1 },
-          { text: 'Roupas e Acessórios', value: 1 },
-          { text: 'Outros Gastos', value: 1 }
-        ],
-        type: [
-          { text: 'Entrada', value: 'IN' },
-          { text: 'Saída', value: 'OUT' }
-        ],
-        method: [
-          { text: 'Crédito', value: 'CREDIT_CARD' },
-          { text: 'Débito', value: 'DEBIT_CARD' },
-          { text: 'Pix', value: 'PIX' }
-        ],
-        status: [
-          { text: 'Pago', value: 'PAGO' },
-          { text: 'Agendado', value: 'AGENDADO' },
-          { text: 'Em atraso', value: 'ATRASADO' }
-        ]
-      },
       formattedFilters: [],
 
       transactions: []
@@ -63,11 +35,9 @@ export default {
 
   watch: {
     filters: {
-      async handler(newVal, oldVal) {
-        if (newVal != oldVal) {
-          this.formatFilter(newVal);
-          await this.fetchTransactions(this.currentPage);
-        }
+      async handler(newVal) {
+        this.formatFilter(newVal);
+        await this.fetchTransactions(this.currentPage);
       },
       // immediate: true,
       deep: true
@@ -134,16 +104,22 @@ export default {
 
   async mounted() {
     EventBus.$on('update-list', async () => {
-      // await this.fetchTransactions(this.currentPage);
+      await this.fetchTransactions(this.currentPage);
     });
   },
   beforeDestroy() {
-    // EventBus.$off('update-list', this.fetchTransactions);
+    EventBus.$off('update-list', this.fetchTransactions);
   },
 
   methods: {
     onRowSelected(items) {
-      console.log(items);
+      this.$modalManager.show({
+        id: 'formEditTransaction',
+        title: 'Editar lançamento',
+        size: 'md',
+        component: () => import('./form/add/index.vue'),
+        selectedItem: items
+      });
     },
     onSubmit(event) {
       event.preventDefault();

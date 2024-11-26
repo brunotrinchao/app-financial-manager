@@ -4,8 +4,8 @@ import Vuex from 'vuex';
 import dashboard from './dashboard';
 import transactions from './transactions';
 import categories from './category';
-
-import trasactionsFormAdd from '@/views/transactions/form/add/index.vue';
+import accounts from './account';
+import creditcards from './creditcard';
 
 Vue.use(Vuex);
 
@@ -33,19 +33,33 @@ export default new Vuex.Store({
         icon: 'bar-chart-steps',
         link: '/lancamentos',
         add: true,
-        component: trasactionsFormAdd
+        form: {
+          component: () => import('@/views/transactions/form/add/index.vue'),
+          title: 'Novo lançamento',
+          size: 'md'
+        }
       },
       {
         name: 'Categorias',
         icon: 'bookmarks',
         link: '/categorias',
-        add: true
+        add: true,
+        form: {
+          component: () => import('@/views/category/form/index.vue'),
+          title: 'Nova categoria',
+          size: 'md'
+        }
       },
       {
         name: 'Contas',
         icon: 'bank',
         link: '/contas',
-        add: true
+        add: true,
+        form: {
+          component: () => import('@/views/account/form/index.vue'),
+          title: 'Nova conta',
+          size: 'md'
+        }
       },
       {
         name: 'Cartões',
@@ -140,6 +154,8 @@ export default new Vuex.Store({
   modules: {
     dashboard,
     transactions,
-    categories
+    categories,
+    accounts,
+    creditcards
   }
 });

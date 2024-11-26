@@ -1,4 +1,5 @@
 export default {
   transactions: [],
-  pagination: {}
+  pagination: {},
+  selecionado: {}
 };

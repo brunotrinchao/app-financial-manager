@@ -25,6 +25,14 @@ export default {
         return [];
       });
     },
+    async updateTransactions(_, { id, params }) {
+      return await api.alterar(`/transactions/${id}`, params).then((data) => {
+        if (data?.data.length) {
+          return data.data;
+        }
+        return [];
+      });
+    },
     async storeTransactions(_, params) {
       return await api.inserir('/transactions', params).then((data) => {
         return data.data;
@@ -37,6 +45,9 @@ export default {
     //   return state.transactions;
     // }
     transactions: (state) => state.transactions,
-    pagination: (state) => state.pagination
+    pagination: (state) => state.pagination,
+    selecionado: (state) => (id) => {
+      return state.transactions.find((transaction) => transaction.id === id);
+    }
   }
 };

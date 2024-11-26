@@ -1,22 +1,31 @@
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import StrHelpMixin from '@/mixins/strHelpMixin.js';
 import { EventBus } from '@/event-bus';
 
 export default {
   name: 'formAdd',
+  props: {
+    items: {
+      type: Object
+    }
+  },
   mixins: [StrHelpMixin],
   data() {
     return {
+      source: {},
       form: {
+        id: null,
         category_id: null,
         type: null,
         method: null,
         amount: 0,
         description: '',
-        transaction_date: null,
+        transaction_date: this.$moment().toDate(),
+        source_id: null,
         source_type: null,
         frequency: null,
-        interval: 1
+        interval: 1,
+        status: null
       },
       amountFormated: '',
       locale: 'pt-BR',
@@ -35,7 +44,14 @@ export default {
       }
     };
   },
-
+  watch: {
+    source: {
+      handler(newVal) {
+        this.form.source_id = newVal.id;
+        this.form.source_type = newVal.type.toLowerCase();
+      }
+    }
+  },
   computed: {
     validations() {
       return [
@@ -78,13 +94,9 @@ export default {
       ];
     },
     getSources() {
-      const source = Array.isArray(this.settings?.source) ? this.settings?.source : [];
-      return [
-        { value: null, text: 'Selecione' },
-        ...source.map((el) => {
-          return { value: el, text: this.translate(el) };
-        })
-      ];
+      const source = this.settings?.source ?? [];
+      console.log(source);
+      return source;
     },
     getFrequency() {
       const frequency = Array.isArray(this.settings?.frequency) ? this.settings?.frequency : [];
@@ -95,15 +107,31 @@ export default {
         })
       ];
     },
+    getStatus() {
+      const status = Array.isArray(this.settings?.status) ? this.settings?.status : [];
+      return [
+        { value: null, text: 'Selecione' },
+        ...status.map((el) => {
+          return { value: el, text: this.translate(el) };
+        })
+      ];
+    },
     getParcelas() {
       return this.form.interval > 1 ? `Valor da parcela: ${this.formatCurrency(this.form.amount / this.form.interval)}` : 'Pagamento único';
     },
     ...mapState(['settings']),
-    ...mapState('categories', ['categories'])
+    ...mapState('categories', ['categories']),
+    ...mapGetters('transactions', ['selecionado']),
+    ...mapGetters('categories', ['_categoryByName'])
   },
 
   async beforeMount() {
     await this.indexCategories();
+  },
+
+  mounted() {
+    this.fillForm();
+    // console.log({ items: this.items });
   },
 
   methods: {
@@ -120,16 +148,39 @@ export default {
     },
     async onSubmit(event) {
       event.preventDefault();
+      let idModal = 'modalform';
       if (this.validateFields(this.form, this.validations)) {
-        await this.storeTransactions(this.form);
+        if (this.form.id) {
+          idModal = 'formEditTransaction';
+          await this.updateTransactions({ id: this.form.id, params: this.form });
+        } else {
+          await this.storeTransactions(this.form);
+        }
         EventBus.$emit('update-list');
         setTimeout(() => {
-          this.$modalManager.hide('formAddTransaction');
+          this.$modalManager.hide(idModal);
         }, 300);
       }
     },
-
+    fillForm() {
+      const itemSelected = this.selecionado(this.items.id);
+      console.log(itemSelected);
+      if (itemSelected) {
+        this.form.id = itemSelected.id;
+        this.form.category_id = itemSelected.category.id;
+        this.form.type = itemSelected.type;
+        this.form.method = itemSelected.method;
+        this.form.amount = itemSelected.amount;
+        this.form.description = itemSelected.description;
+        this.form.transaction_date = itemSelected.transaction_date;
+        this.source = { id: itemSelected.source.id, type: itemSelected.source.type };
+        this.form.frequency = itemSelected.frequency;
+        this.form.interval = itemSelected.interval;
+        this.form.status = itemSelected.status;
+      }
+    },
+    // TODO - Veridicar se pode remover o indexCategories e buscar no state
     ...mapActions('categories', ['indexCategories']),
-    ...mapActions('transactions', ['storeTransactions'])
+    ...mapActions('transactions', ['storeTransactions', 'updateTransactions'])
   }
 };

@@ -1,12 +1,12 @@
 <template>
-  <div class="Category">
+  <div class="Account">
     <div class="row">
-      <div class="col-sm-12 col-md-6">
+      <div class="col">
         <div class="card">
           <div class="card-body">
             <b-table
-              id="table-categories"
-              key="tableCategories"
+              id="table-accounts"
+              key="tableAccounts"
               ref="table"
               striped
               stacked="sm"
@@ -23,8 +23,10 @@
               <template #cell(name)="data">
                 <b class="text-info">{{ data.item.name }}</b>
               </template>
+              <template #cell(balance)="data">
+                {{ data.item.balance }}
+              </template>
             </b-table>
-            <!-- <b-pagination size="sm" v-model="currentPage" :total-rows="totalPage" :per-page="perPage" @input="fetchCategories" align="center" /> -->
           </div>
         </div>
       </div>
@@ -32,6 +34,6 @@
   </div>
 </template>
 
-<script src="./category.js" />
+<script src="./account.js" />
 
-<style scoped lang="scss" src="./category.scss" />
+<style scoped lang="scss" src="./account.scss" />

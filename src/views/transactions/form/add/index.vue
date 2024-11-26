@@ -1,6 +1,15 @@
 <template>
   <div class="transaction-form-add">
     <b-form @submit="onSubmit">
+      <input type="hidden" v-model="form.id" />
+      <b-row v-if="form.id">
+        <!-- Type -->
+        <b-col md="6">
+          <b-form-group label="Status" label-for="type">
+            <b-form-select name="type" id="type" v-model="form.status" :options="getStatus"></b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-row>
       <b-row>
         <!-- Type -->
         <b-col md="6">
@@ -22,7 +31,14 @@
         <!-- Source Type -->
         <b-col md="6" v-if="form.type == 'income'">
           <b-form-group label="Fonte" label-for="source-type">
-            <b-form-select name="source-type" id="source-type" v-model="form.source_type" :options="getSources"></b-form-select>
+            <b-form-select name="source-type" id="source-type" v-model="source">
+              <b-form-select-option value="">Selecione</b-form-select-option>
+              <b-form-select-option-group :label="translate(keyIndex)" v-for="(item, keyIndex) in getSources" :key="keyIndex">
+                <b-form-select-option :value="{ id: subItem.id, type: keyIndex }" v-for="(subItem, index) in item" :key="index">
+                  {{ subItem.name }}
+                </b-form-select-option>
+              </b-form-select-option-group>
+            </b-form-select>
           </b-form-group>
         </b-col>
 

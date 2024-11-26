@@ -15,7 +15,7 @@ let configAlert = {
   toast: true,
   position: 'top-end',
   showConfirmButton: false,
-  timer: 4000,
+  timer: 2000,
   timerProgressBar: false
 };
 // Interceptor de requisição
@@ -50,9 +50,7 @@ api.interceptors.response.use(
     if (response.status >= 200 && response.status <= 299) {
       title = 'Sucesso';
       configAlert.icon = 'success';
-      configAlert.position = 'center';
       configAlert.showConfirmButton = false;
-      configAlert.toast = false;
     }
     if (message) {
       if (typeof message === 'object') {

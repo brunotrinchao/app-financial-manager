@@ -1,7 +1,7 @@
 <template>
   <div class="Header">
     <b-navbar fixed="top" toggleable="lg" variant="white" class="shadow-sm p-3 mb-5">
-      <b-navbar-brand href="#">NavBar</b-navbar-brand>
+      <b-navbar-brand href="#">Gerencimento financeiro</b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 

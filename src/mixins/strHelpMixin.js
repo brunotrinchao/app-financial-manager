@@ -13,6 +13,7 @@ export default {
       const translations = {
         cash: 'Dinheiro',
         credit_card: 'Cartão de crédito',
+        creditCard: 'Cartão de crédito',
         debit_card: 'Cartão de débito',
         pix: 'PIX',
         account: 'Conta',

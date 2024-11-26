@@ -8,7 +8,6 @@ import Fab from './fab';
 import ModalForm from './modalform/index.vue';
 // COMPONENT IMPORTS
 
-console.log('ModalForm:', ModalForm);
 export {
   Indicators,
   Table,

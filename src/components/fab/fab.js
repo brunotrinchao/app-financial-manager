@@ -36,14 +36,14 @@ export default {
   methods: {
     clickHandler(item) {
       this.resetModal();
-      this.selectedComponent = item.component; // Nome do componente a renderizar
+      this.selectedComponent = item.form.component; // Nome do componente a renderizar
       this.selectedItem = item; // Dados do item selecionado (se necessário)
-      this.modalTitle = item.name; // Define o título do modal
+      this.modalTitle = item.form.title ?? item.name; // Define o título do modal
 
       this.$modalManager.show({
-        id: 'formAddTransaction',
+        id: item.form.id ?? 'modalform',
         title: this.modalTitle,
-        size: 'md',
+        size: item.form.size ?? 'md',
         component: this.selectedComponent, // Nome do componente Vue
         selectedItem: this.selectedItem // Dados passados para o componente
       });

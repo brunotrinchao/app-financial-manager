@@ -1,7 +1,7 @@
 <template>
-  <div class="Category">
+  <div class="CreditCard">
     <div class="row">
-      <div class="col-sm-12 col-md-6">
+      <div class="col">
         <div class="card">
           <div class="card-body">
             <b-table
@@ -32,6 +32,6 @@
   </div>
 </template>
 
-<script src="./category.js" />
+<script src="./creditCard.js" />
 
-<style scoped lang="scss" src="./category.scss" />
+<style scoped lang="scss" src="./creditCard.scss" />

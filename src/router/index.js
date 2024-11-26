@@ -7,6 +7,8 @@ import Category from '@/views/category';
 import Login from '@/views/login';
 import AuthCallback from '@/views/authcallback';
 import Logout from '@/views/logout';
+import Account from '@/views/account';
+import CreditCard from '@/views/creditcard';
 // PAGE IMPORTS
 
 Vue.use(VueRouter);
@@ -45,6 +47,20 @@ const routes = [
     name: 'logout',
     component: Logout,
     meta: { title: 'Logout', icon: 'columns-gap', showDatePicker: false }
+  },
+
+  {
+    path: '/contas',
+    name: 'contas',
+    component: Account,
+    meta: { title: 'Contas', icon: 'columns-gap', showDatePicker: false }
+  },
+
+  {
+    path: '/cartoes',
+    name: 'cartoes',
+    component: CreditCard,
+    meta: { title: 'Cartão de crédito', icon: 'columns-gap', showDatePicker: false }
   },
   // ADD ROUTE
 

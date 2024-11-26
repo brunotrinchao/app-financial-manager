@@ -47,7 +47,7 @@ export default {
               },
               [
                 h('component', {
-                  props: { data: this.selectedItem },
+                  props: { data: this.selectedItem, items: this.selectedItem },
                   is: this.component
                 }),
                 h('template', { slot: 'modal-footer' })
