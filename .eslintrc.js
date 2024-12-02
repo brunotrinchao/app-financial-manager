@@ -23,6 +23,7 @@ module.exports = {
     'vue/match-component-file-name': 'warn',
     'vue/multi-word-component-names': 'off',
     'vue/no-useless-template-attributes': 'off',
+    'prettier/prettier': ['error', { endOfLine: 'crlf' }],
     quotes: ['error', 'single']
   }
 };
