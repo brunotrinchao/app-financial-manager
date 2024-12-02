@@ -6,7 +6,7 @@ import Table from './table';
 import Preloader from './preloader';
 import Fab from './fab';
 import ModalForm from './modalform/index.vue';
-import Chart from './chart/index.vue';
+import Chart from './chart';
 // COMPONENT IMPORTS
 
 export {
