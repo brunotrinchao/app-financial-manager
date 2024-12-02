@@ -44,34 +44,31 @@ export default {
         selectedItem: items
       });
     },
-    // async fetchCategories(page) {
-    //   page = page ?? 1;
+    async fetchCategories(page) {
+      page = page ?? 1;
 
-    //   const itemsArr = await this.indexCategories({
-    //     page: page,
-    //     per_page: this.perPage,
-    //     orderBy: {
-    //       field: 'transaction_date'
-    //     }
-    //   });
-
-    //   if (itemsArr.length > 0) {
-    //     this.items = this.formatItems(itemsArr);
-    //     console.log(this.items);
-    //   }
-
-    //   // TODO - Corrigir paginação
-    //   this.$nextTick(() => {
-    //     this.$root.$emit('bv::refresh::table', 'table-categories');
-    //   });
-    // },
-    formatItems(itemsArr) {
-      return itemsArr.map((el) => {
-        return {
-          id: el.id,
-          name: el.name
-        };
+      const itemsArr = await this.indexCategories({
+        page: page,
+        per_page: this.perPage,
+        orderBy: {
+          field: 'name'
+        }
       });
+
+      if (itemsArr.length > 0) {
+        this.items = this.formatItems(itemsArr);
+      }
+      return { items: this.items };
+    },
+    formatItems(itemsArr) {
+      return itemsArr
+        .filter((el) => el.name != 'Sem categoria')
+        .map((el) => {
+          return {
+            id: el.id,
+            name: el.name
+          };
+        });
     },
     ...mapActions('categories', ['indexCategories'])
   }

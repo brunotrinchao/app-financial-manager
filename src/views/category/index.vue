@@ -1,10 +1,10 @@
 <template>
   <div class="Category">
     <div class="row">
-      <div class="col-sm-12 col-md-6">
+      <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table
+            <!-- <b-table
               id="table-categories"
               key="tableCategories"
               ref="table"
@@ -23,8 +23,26 @@
               <template #cell(name)="data">
                 <b class="text-info">{{ data.item.name }}</b>
               </template>
-            </b-table>
+            </b-table> -->
             <!-- <b-pagination size="sm" v-model="currentPage" :total-rows="totalPage" :per-page="perPage" @input="fetchCategories" align="center" /> -->
+
+            <Table
+              ref="tableCategory"
+              table-id="categoriesTable"
+              :api-method="fetchCategories"
+              :fields="fields"
+              :per-page="10"
+              @row-selected="onRowSelected"
+              :paginationShow="false"
+            >
+              <!-- Customização de colunas com slots -->
+              <template #type="{ item }">
+                <b-badge :variant="item.type.color">{{ item.type.name }}</b-badge>
+              </template>
+              <template #value="{ item }">
+                {{ item.value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}
+              </template>
+            </Table>
           </div>
         </div>
       </div>

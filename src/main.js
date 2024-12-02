@@ -35,6 +35,9 @@ Vue.use(VueCurrencyInput, pluginOptions);
 
 Vue.prototype.$moment = moment;
 
+import VueScreen from 'vue-screen';
+Vue.use(VueScreen, 'bootstrap');
+
 Vue.config.productionTip = false;
 
 Vue.prototype.$eventBus = new Vue();

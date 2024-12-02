@@ -21,14 +21,36 @@
                 </div>
               </div>
             </h5>
-            <b-table
-              id="table-transactions"
-              key="tableTransactions"
-              ref="table"
+            <div class="legend mb-4">
+              <span v-for="(item, index) in getLegends" :key="index" class="mr-3">
+                <img :src="item.icon" alt="" width="12" class="mr-2" />
+                <small>{{ item.name }}</small>
+              </span>
+            </div>
+            <Table
+              ref="tableTansaction"
+              table-id="transactionsTable"
+              :api-method="fetchTransactions"
+              :fields="fields"
+              :per-page="10"
+              @row-selected="onRowSelected"
+            >
+              <!-- Customização de colunas com slots -->
+              <template #type="{ item }">
+                <b-badge :variant="item.type.color">{{ item.type.name }}</b-badge>
+              </template>
+              <template #value="{ item }">
+                {{ item.value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}
+              </template>
+            </Table>
+            <!-- <b-table
+              :id="tableNewId"
+              :key="tableNewId"
+              ref="tableTransactions"
               striped
               stacked="sm"
               responsive="sm"
-              :items="getItems"
+              :items="items"
               :fields="fields"
               :per-page="perPage"
               :current-page="currentPage"
@@ -45,12 +67,6 @@
 
               <template #cell(type)="data">
                 <b-badge :variant="data.item.type.color">{{ data.item.type.name }}</b-badge>
-                <!-- <b-icon
-                  :icon="data.item.type"
-                  :variant="data.item.type == 'arrow-down-circle-fill' ? 'danger' : 'success'"
-                  v-b-tooltip.hover
-                  :title="data.item.typeName"
-                /> -->
               </template>
 
               <template #cell(value)="data">
@@ -66,7 +82,7 @@
               </template>
             </b-table>
 
-            <b-pagination size="sm" v-model="currentPage" :total-rows="totalPage" :per-page="perPage" @input="fetchTransactions" align="center" />
+            <b-pagination v-model="currentPage" :total-rows="totalPage" :per-page="perPage" @input="fetchTransactions" align="center" /> -->
           </div>
         </div>
       </div>

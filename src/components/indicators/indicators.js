@@ -10,6 +10,10 @@ export default {
       type: String,
       required: true
     },
+    total: {
+      type: Number,
+      required: true
+    },
     icon: {
       type: String,
       required: true

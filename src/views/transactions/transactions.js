@@ -1,25 +1,32 @@
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { EventBus } from '@/event-bus';
 import StrHelpMixin from '@/mixins/strHelpMixin.js';
+import { Table } from '@/components';
 
 export default {
   name: 'Transactions',
   mixins: [StrHelpMixin],
+  components: { Table },
   data() {
     return {
-      sortBy: 'age',
+      goRequest: true,
+      tableNewId: this.$moment().valueOf().toString(),
+      sortBy: 'transaction_date',
       sortDesc: false,
       fields: [
-        { label: 'Data', key: 'date', sortable: true },
+        { label: 'Data', key: 'transaction_date', sortable: true },
+        { label: 'Usuário', key: 'user', sortable: true },
         { label: 'Categoria', key: 'category', sortable: true },
         { label: 'Tipo', key: 'type', sortable: true },
         { label: 'Metodo', key: 'method', sortable: true },
         { label: 'Valor', key: 'value', sortable: true },
-        { lavel: 'Status', key: 'status', sortable: true }
+        { label: 'Descrição', key: 'description', sortable: false },
+        { label: 'Status', key: 'status', sortable: true }
       ],
       items: [],
+      paginate: {},
       perPage: 10,
-      currentPage: null,
+      currentPage: 1,
       totalPage: null,
       filter: {
         category: null,
@@ -28,7 +35,6 @@ export default {
         status: null
       },
       formattedFilters: [],
-
       transactions: []
     };
   },
@@ -38,24 +44,18 @@ export default {
       async handler(newVal) {
         this.formatFilter(newVal);
         await this.fetchTransactions(this.currentPage);
+        this.$refs.tableTansaction.refreshTable();
       },
       // immediate: true,
       deep: true
     },
     pagination: {
       handler(newVal) {
-        // this.currentPage = newVal.current_page;
         this.totalPage = newVal.total;
       },
       immediate: true,
       deep: true
     }
-    // currentPage: {
-    //   handler: async (newVal) => {
-    //     await this.fetchTransactions(newVal);
-    //   },
-    //   deep: true
-    // }
   },
 
   computed: {
@@ -71,7 +71,7 @@ export default {
       const types = Array.isArray(this.settings?.type) ? this.settings.type : [];
       return [
         { value: null, text: 'Selecione' },
-        types.map((el) => {
+        ...types.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
@@ -80,7 +80,7 @@ export default {
       const method = Array.isArray(this.settings?.method) ? this.settings.method : [];
       return [
         { value: null, text: 'Selecione' },
-        method.map((el) => {
+        ...method.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
@@ -89,13 +89,24 @@ export default {
       const status = Array.isArray(this.settings?.status) ? this.settings.status : [];
       return [
         { value: null, text: 'Selecione' },
-        status.map((el) => {
+        ...status.map((el) => {
           return { value: el, text: this.translate(el) };
         })
       ];
     },
     getItems() {
       return this.items;
+    },
+    getColunms() {
+      const colunms = Array.isArray(this.fields) ? this.fields : [];
+      return [
+        ...colunms.map((el) => {
+          return { value: el.key, text: el.label };
+        })
+      ];
+    },
+    getLegends() {
+      return this.showLegendas();
     },
     ...mapState(['filters', 'settings']),
     ...mapGetters('transactions', ['pagination']),
@@ -104,10 +115,12 @@ export default {
 
   async mounted() {
     EventBus.$on('update-list', async () => {
+      console.log('Mounted');
       await this.fetchTransactions(this.currentPage);
     });
   },
   beforeDestroy() {
+    console.log('beforeDestroy');
     EventBus.$off('update-list', this.fetchTransactions);
   },
 
@@ -117,7 +130,7 @@ export default {
         id: 'formEditTransaction',
         title: 'Editar lançamento',
         size: 'md',
-        component: () => import('./form/add/index.vue'),
+        component: () => import('./form/index.vue'),
         selectedItem: items
       });
     },
@@ -197,7 +210,7 @@ export default {
         case 'scheduled':
           return { name, color: 'info' };
         case 'canceled':
-          return { name, color: 'secondary' };
+          return { name, color: 'dark' };
         case 'overdue':
           return { name, color: 'danger' };
         case 'paid':
@@ -215,48 +228,69 @@ export default {
 
       const endDate = this.filters?.period?.endDate ? this.filters.period.endDate.format('YYYY-MM-DD') : null;
 
-      let params = { ...this.filters };
-      delete params.period;
-
-      this.transactions = await this.indexTransactions({
-        page: page,
+      const params = {
+        ...this.filters,
+        page,
         per_page: this.perPage,
         orderBy: {
           field: 'transaction_date'
         },
-        date: {
-          startDate,
-          endDate
-        },
-        ...params
-      });
+        date: { startDate, endDate }
+      };
 
-      if (this.transactions.length > 0) {
-        this.items = this.formatItems();
+      delete params.period;
+
+      const response = await this.indexTransactions(params);
+
+      if (response?.items?.length > 0) {
+        this.items = this.formatItems(response.items);
+        this.paginate = response.paginate;
       }
+      return { items: this.items, paginate: this.paginate };
 
       // TODO - Corrigir paginação
-      this.$nextTick(() => {
-        this.$root.$emit('bv::refresh::table', 'table-transactions');
-      });
+      // this.$nextTick(() => {
+      // console.log(this.$refs);
+      // this.$refs.tableTransactions.refresh();
+      // this.$root.$emit('bv::refresh::table', 'tableTransactions');
+      // this.tableNewId = this.$moment().valueOf().toString();
+      // });
     },
-    formatItems() {
-      return this.transactions?.map((el) => {
+    formatItems(itens) {
+      return itens.map((el) => {
         return {
           id: el.id,
-          date: this.$moment(el.transaction_date).format('DD/MM/YYYY'),
+          transaction_date: this.$moment(el.transaction_date).format('DD/MM/YYYY'),
           category: el.category?.name,
-          type: { name: this.formatType(el?.type), color: el?.type === 'income' ? 'success' : 'danger' },
-          method: this.translate(el?.method),
+          type: {
+            name: this.translate(el?.type),
+            color: el?.type === 'income' ? 'success' : 'danger',
+            icon: this.getIcon('type', el?.type)
+          },
+          method: {
+            name: this.translate(el?.method),
+            icon: this.getIcon('methods', el?.method)
+          },
           value: el.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
           status: this.formatStatus(el?.status),
-          typeName: this.formatType(el?.type)
+          description: el.description ? this.abbreviateText(el.description, 15) : '',
+          typeName: this.translate(el?.type),
+          user: { name: el?.user.name, avatar: el?.user.avatar, text: this.getInitials(el?.user.name) }
         };
       });
     },
     async openFilter() {
       await this.indexCategories();
       this.$root.$emit('bv::toggle::collapse', 'sidebarFilter');
+    },
+    formatObjType(type) {
+      const types = {
+        income: { name: this.translate(type), color: 'success' },
+        expense: { name: this.translate(type), color: 'danger' },
+        transfer: { name: this.translate(type), color: 'dark' }
+      };
+
+      return types[type];
     },
     ...mapActions(['setFilters']),
     ...mapActions('transactions', ['indexTransactions']),

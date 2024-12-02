@@ -4,10 +4,9 @@
       <div class="card-block">
         <h2 class="d-flex justify-content-between">
           <span>{{ value }}</span>
-          <b-icon :icon="icon" style="opacity: 0.4" />
         </h2>
 
-        <p class="mb-0">{{ title }}</p>
+        <p class="mb-0">{{ title }}: {{ total }}</p>
         <!-- <div class="m-b-0">
           <apexchart type="line" :options="chartOptions" :series="series"></apexchart>
         </div> -->

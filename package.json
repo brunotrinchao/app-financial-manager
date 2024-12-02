@@ -24,6 +24,7 @@
     "vue-apexcharts": "^1.6.2",
     "vue-currency-input": "^1.22.6",
     "vue-router": "^3.5.1",
+    "vue-screen": "^1.5.3",
     "vue-sweetalert2": "^5.0.11",
     "vue2-daterange-picker": "^0.6.8",
     "vuejs-smart-table": "^0.0.8",

@@ -28,11 +28,11 @@ export default {
     ...mapGetters('accounts', ['accounts'])
   },
   async beforeMount() {
-    await this.indexAccounts();
+    await this.fetchAccounts();
   },
   async mounted() {
     EventBus.$on('update-list', async () => {
-      await this.indexAccounts();
+      await this.fetchAccounts();
     });
   },
   methods: {
@@ -44,6 +44,22 @@ export default {
         component: () => import('./form/index.vue'),
         selectedItem: items
       });
+    },
+    async fetchAccounts(page) {
+      page = page ?? 1;
+
+      const itemsArr = await this.indexAccounts({
+        page: page,
+        per_page: this.perPage,
+        orderBy: {
+          field: 'name'
+        }
+      });
+
+      if (itemsArr.length > 0) {
+        this.items = this.formatItems(itemsArr);
+      }
+      return { items: this.items };
     },
     formatItems(itemsArr) {
       return itemsArr.map((el) => {

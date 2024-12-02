@@ -1,1 +1,7 @@
-//.Dashboard{ }
+.Dashboard {
+  .legend {
+    display: flex;
+    justify-content: left;
+    font-size: 12px;
+  }
+}

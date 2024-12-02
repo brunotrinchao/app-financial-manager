@@ -1,13 +1,27 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
 import state from './state.js';
-Vue.use(Vuex);
+import api from '@/api/api';
 
-export default new Vuex.Store({
+export default {
   namespaced: true,
   state,
-  getters: {},
   mutations: {},
-  actions: {},
-  modules: {}
-});
+  actions: {
+    async indexIndicators(_, params = {}) {
+      return await api.obter('/dashboard/indicators', params).then((data) => {
+        if (data) {
+          return data;
+        }
+        return [];
+      });
+    },
+    async indexChart(_, { url, params }) {
+      return await api.obter(`/dashboard/${url}`, params).then((data) => {
+        if (data) {
+          return data;
+        }
+        return [];
+      });
+    }
+  },
+  getters: {}
+};

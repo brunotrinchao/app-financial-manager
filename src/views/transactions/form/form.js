@@ -1,15 +1,18 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import StrHelpMixin from '@/mixins/strHelpMixin.js';
 import { EventBus } from '@/event-bus';
-import Form from '../index.vue';
+
+import IncomeForm from './types/income.vue';
+import ExpenseForm from './types/expense.vue';
+import TransferForm from './types/transfer.vue';
+
 export default {
-  name: 'formAdd',
+  name: 'formTransaction',
   props: {
     items: {
       type: Object
     }
   },
-  components: { Form },
   mixins: [StrHelpMixin],
   data() {
     return {
@@ -21,56 +24,30 @@ export default {
         method: null,
         amount: 0,
         description: '',
-        transaction_date: this.$moment().toDate(),
+        transaction_date: this.$moment().startOf('day').format('YYYY-MM-DD'),
         source_id: null,
         source_type: null,
         frequency: null,
         interval: 1,
         status: null
-      },
-      amountFormated: '',
-      locale: 'pt-BR',
-      hideHeader: true,
-      dateFormatOptions: { year: 'numeric', month: 'numeric', day: 'numeric' },
-      label: {
-        NextMonth: 'Próximo mês',
-        NextYear: 'Próximo ano',
-        NoDateSelected: 'Data não selecionada',
-        PrevMonth: 'Mês anterior',
-        PrevYear: 'Ano anterior',
-        Selected: 'Selecionado',
-        Today: 'Hoje',
-        CurrentMonth: 'Mês atual',
-        Help: 'Use as teclas para navegar pelas datas do calendário'
       }
     };
   },
-  watch: {
-    source: {
-      handler(newVal) {
-        this.form.source_id = newVal.id;
-        this.form.source_type = newVal.type.toLowerCase();
-      }
-    },
-    'form.method': {
-      handler(newVal, oldVal) {
-        if (this.form.type == 'expense' && newVal != oldVal) {
-          this.source = {};
-          this.form.source_id = null;
-          this.form.source_type = null;
-        }
-      }
-    }
+  components: {
+    IncomeForm,
+    ExpenseForm,
+    TransferForm
   },
   computed: {
     validations() {
+      console.log(this.form);
       return [
         { model: 'type', name: 'Tipo de transação', condition: this.form.type == null },
         { model: 'category_id', name: 'Categoria', condition: this.form.type !== null && this.form.category == null },
         { model: 'method', name: `Método de ${this.form.type == 'income' ? 'recebimento' : 'pagamento'}`, condition: this.form.type !== null },
         { model: 'amount', name: 'Valor', condition: this.form.type !== null && this.form.amount == 0 },
         { model: 'transaction_date', name: 'Data da transação', condition: this.form.type !== null },
-        { model: 'source_id', name: 'Fonte', condition: this.form.method !== null && this.form.source_id == null },
+        { model: 'source_id', name: 'Fonte', condition: this.form.method !== null && this.form.source_id == null && this.form.method == 'transfer' },
         { model: 'frequency', name: 'Frequência', condition: this.form.interval > 1 && this.form.type === 'expense' },
         { model: 'interval', name: 'Parcelas', condition: this.form.type === 'expense' }
       ];
@@ -110,12 +87,13 @@ export default {
     getSourcesAccount() {
       const source = this.settings?.source ?? [];
       const list = ['account', 'pix', 'debit_card'].includes(this.form.method) ? source.account : source.creditCard;
-      const souce_type = ['account', 'pix', 'debit_card'].includes(this.form.method) ? 'account' : 'credit_card';
+      const source_type = ['account', 'pix', 'debit_card'].includes(this.form.method) ? 'account' : 'credit_card';
+      console.log({ list });
       return [
-        { value: null, type: 'Selecione' },
+        { value: null, type: 'Selecione', source_type: null },
         ...list.map((el) => {
           const flag = el.bank ? el.bank : el.issuer;
-          return { value: el.id, type: el.name + ' - ' + flag.name, souce_type };
+          return { value: el.id, type: el.name + ' - ' + flag.name, source_type };
         })
       ];
     },
@@ -149,17 +127,43 @@ export default {
     ...mapGetters('transactions', ['selecionado']),
     ...mapGetters('categories', ['_categoryByName'])
   },
-
-  async beforeMount() {
-    await this.indexCategories();
-  },
-
-  mounted() {
+  beforeMount() {
     this.fillForm();
-    // console.log({ items: this.items });
   },
+  async mounted() {
+    await this.indexCategories();
 
+    EventBus.$on('update-form-transaction', (val) => {
+      this.fillFormTypes(val);
+    });
+  },
   methods: {
+    getComponent(type) {
+      if (type == 'transfer') {
+        this.form.method = 'account';
+      }
+
+      switch (type) {
+        case 'income':
+          return 'IncomeForm';
+        case 'expense':
+          return 'ExpenseForm';
+        case 'transfer':
+          return 'TransferForm';
+        default:
+          return type;
+      }
+    },
+    handleTypeChange() {
+      this.resetForm();
+      this.$emit('resetForm');
+    },
+    // onSubmit(event) {
+    //   event.preventDefault();
+    //   console.log(this.$refs);
+    //   EventBus.$emit('update-list');
+    //   this.$emit('submitForm');
+    // },
     formatCurrency(value) {
       return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -179,6 +183,8 @@ export default {
           idModal = 'formEditTransaction';
           await this.updateTransactions({ id: this.form.id, params: this.form });
         } else {
+          this.form.transaction_date = this.$moment(this.form.transaction_date).format('YYYY-MM-DD');
+          console.log(this.form);
           await this.storeTransactions(this.form);
         }
         EventBus.$emit('update-list');
@@ -189,6 +195,8 @@ export default {
     },
     fillForm() {
       const itemSelected = this.selecionado(this.items.id);
+
+      console.log({ itemSelected });
       if (itemSelected) {
         this.form.id = itemSelected.id;
         this.form.category_id = itemSelected.category.id;
@@ -196,18 +204,35 @@ export default {
         this.form.method = itemSelected.method;
         this.form.amount = itemSelected.amount;
         this.form.description = itemSelected.description;
-        this.form.transaction_date = itemSelected.transaction_date;
+        this.form.transaction_date = itemSelected.transaction_date.format('YYYY-MM-DD');
         this.form.frequency = itemSelected.frequency;
         this.form.interval = itemSelected.interval;
         this.form.installment = itemSelected.installment;
         this.form.status = itemSelected.status;
 
         if (itemSelected.source) {
-          this.source = { id: itemSelected.source.id, type: itemSelected.source.type };
+          this.form.source_id = itemSelected.source.id;
+          this.form.source_type = itemSelected.source.type;
         }
       }
     },
-    // TODO - Veridicar se pode remover o indexCategories e buscar no state
+    resetForm() {
+      this.form.method = null;
+      this.form.amount = 0;
+      this.form.description = '';
+      this.form.transaction_date = this.$moment().toDate();
+      this.form.source_id = null;
+      this.form.source_type = null;
+      this.form.source = {};
+      this.form.frequency = null;
+      this.form.interval = 1;
+      this.form.status = null;
+    },
+    fillFormTypes(val) {
+      Object.keys(val).forEach((element) => {
+        this.form[element] = val[element];
+      });
+    },
     ...mapActions('categories', ['indexCategories']),
     ...mapActions('transactions', ['storeTransactions', 'updateTransactions'])
   }

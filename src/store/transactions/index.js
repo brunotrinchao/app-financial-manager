@@ -20,7 +20,7 @@ export default {
       return await api.obter('/transactions', params).then((data) => {
         if (data?.data.length) {
           commit('SET_TRANSACTIONS', data);
-          return data.data;
+          return { items: data.data, paginate: data.meta };
         }
         return [];
       });

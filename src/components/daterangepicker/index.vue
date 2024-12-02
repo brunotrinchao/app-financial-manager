@@ -50,6 +50,7 @@
       v-model="dateRange"
       :ranges="objRanges"
       @update="updateValues"
+      style="width: 100%"
     >
       <template v-slot:input="picker" style="min-width: 350px">{{ formatDateRange(picker) }}</template>
     </date-range-picker>

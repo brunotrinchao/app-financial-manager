@@ -1,9 +1,17 @@
+import { EventBus } from '@/event-bus';
+import StrHelpMixin from '@/mixins/strHelpMixin.js';
+
 export default {
   name: 'Table',
 
+  mixins: [StrHelpMixin],
   props: {
-    items: {
-      type: Array,
+    tableId: {
+      type: String,
+      required: true
+    },
+    apiMethod: {
+      type: Function,
       required: true
     },
     fields: {
@@ -12,28 +20,87 @@ export default {
     },
     perPage: {
       type: Number,
-      default: 5 // Número padrão de itens por página
+      default: 10
+    },
+    initialPage: {
+      type: Number,
+      default: 1
+    },
+    paginationShow: {
+      type: Boolean,
+      default: true
+    },
+    isSmall: {
+      type: Boolean,
+      default: false
     }
   },
 
   data() {
     return {
-      currentPage: 1
+      items: [],
+      totalRows: 0,
+      currentPage: this.initialPage,
+      sortBy: null,
+      sortDesc: false
     };
   },
-
-  computed: {
-    // Filtra os itens para exibir apenas os da página atual
-    paginatedItems() {
-      const start = (this.currentPage - 1) * this.perPage;
-      return this.items.slice(start, start + this.perPage);
-    }
+  watch: {
+    currentPage: 'fetchData',
+    sortBy: 'fetchData',
+    sortDesc: 'fetchData'
   },
-
+  mounted() {
+    this.fetchData();
+    EventBus.$on('update-list', () => {
+      this.refreshTable();
+    });
+    console.group({ smal: this.small });
+  },
   methods: {
-    onRowClick(item) {
-      // Emite o item clicado para o componente pai
-      this.$emit('row-click', item);
+    async fetchData() {
+      try {
+        const response = await this.apiMethod(this.currentPage);
+        this.items = Array.isArray(response.items) ? response.items : [];
+        this.totalRows = response.paginate?.total || 0;
+        console.log(this.items);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        this.items = [];
+        this.totalRows = 0;
+      }
+    },
+    refreshTable() {
+      this.fetchData();
+    },
+    onRowSelected(row) {
+      this.$emit('row-selected', row);
+    },
+    sort(field) {
+      if (this.sortBy === field) {
+        this.sortDesc = !this.sortDesc;
+      } else {
+        this.sortBy = field;
+        this.sortDesc = false;
+      }
+
+      this.fetchData();
+    },
+    getAvatar(img) {
+      return img ?? 'https://placekitten.com/300/300';
+    },
+    formatText(key, text) {
+      let icon;
+      try {
+        icon = require(`@/assets/imgs/${key}/${text}.svg`);
+      } catch (error) {
+        icon = '';
+      }
+
+      return {
+        name: this.translate(text),
+        icon: icon
+      };
     }
   }
 };

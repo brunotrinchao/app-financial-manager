@@ -1,4 +1,4 @@
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { EventBus } from '@/event-bus';
 import StrHelpMixin from '@/mixins/strHelpMixin.js';
 export default {
@@ -11,18 +11,37 @@ export default {
   },
   data() {
     return {
+      issuer: null,
       form: {
         id: null,
         name: null,
+        issuer_id: null,
         limit: 0,
         available_limit: 0
       }
     };
   },
+  watch: {
+    issuer: {
+      handler(newVal) {
+        this.form.issuer_id = newVal;
+      }
+    }
+  },
   computed: {
     validations() {
       return [{ model: 'name', name: 'Nome', condition: this.form.name == null }];
     },
+    getFlagsList() {
+      const issuer = Array.isArray(this.settings?.issuer) ? this.settings?.issuer : [];
+      return [
+        { value: null, text: 'Selecione' },
+        ...issuer.map((el) => {
+          return { value: el.id, text: el.name };
+        })
+      ];
+    },
+    ...mapState(['settings']),
     ...mapGetters('creditcards', ['creditcardById'])
   },
   mounted() {
@@ -47,12 +66,11 @@ export default {
     },
     fillForm() {
       const itemSelected = this.creditcardById(this.items.id);
-      console.log(itemSelected);
-
       if (itemSelected) {
         this.form = itemSelected;
+        this.issuer = itemSelected.issuer.id;
       }
     },
-    ...mapActions('creditcard', ['indexCreditCards', 'storeCreditCards', 'updateCreditCards'])
+    ...mapActions('creditcards', ['indexCreditCards', 'storeCreditCards', 'updateCreditCards'])
   }
 };

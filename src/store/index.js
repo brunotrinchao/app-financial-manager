@@ -34,7 +34,7 @@ export default new Vuex.Store({
         link: '/lancamentos',
         add: true,
         form: {
-          component: () => import('@/views/transactions/form/add/index.vue'),
+          component: () => import('@/views/transactions/form/index.vue'),
           title: 'Novo lançamento',
           size: 'md'
         }
@@ -65,7 +65,12 @@ export default new Vuex.Store({
         name: 'Cartões',
         icon: 'credit-card-2-back',
         link: '/cartoes',
-        add: true
+        add: true,
+        form: {
+          component: () => import('@/views/creditcard/form/index.vue'),
+          title: 'Novo cartão de crédito',
+          size: 'md'
+        }
       }
     ],
     settings: [],
@@ -149,6 +154,9 @@ export default new Vuex.Store({
     filters: (state) => state.filters,
     isAuthenticated: (state) => {
       return state.token;
+    },
+    flagCreditCard: (state) => {
+      return state.flagCreditCard;
     }
   },
   modules: {

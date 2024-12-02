@@ -1,4 +1,17 @@
-//.Table{ }
-.b-table tbody tr:hover {
-  cursor: pointer;
+.table-container {
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  .row-select {
+    cursor: pointer;
+  }
+  .pagination .page-link {
+    cursor: pointer;
+  }
+  .payment-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
 }

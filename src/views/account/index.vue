@@ -4,7 +4,24 @@
       <div class="col">
         <div class="card">
           <div class="card-body">
-            <b-table
+            <Table
+              ref="tableAccounts"
+              table-id="accountsTable"
+              :api-method="fetchAccounts"
+              :fields="fields"
+              :per-page="10"
+              @row-selected="onRowSelected"
+              :paginationShow="false"
+            >
+              <!-- Customização de colunas com slots -->
+              <template #type="{ item }">
+                <b-badge :variant="item.type.color">{{ item.type.name }}</b-badge>
+              </template>
+              <template #value="{ item }">
+                {{ item.value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}
+              </template>
+            </Table>
+            <!-- <b-table
               id="table-accounts"
               key="tableAccounts"
               ref="table"
@@ -26,7 +43,7 @@
               <template #cell(balance)="data">
                 {{ data.item.balance }}
               </template>
-            </b-table>
+            </b-table> -->
           </div>
         </div>
       </div>

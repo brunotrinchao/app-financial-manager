@@ -69,7 +69,7 @@ export default {
         this.form.id = itemSelected.id;
         this.form.name = itemSelected.name;
         this.bank = itemSelected.bank;
-        this.form.balance = itemSelected.balance;
+        this.form.balance = parseInt(itemSelected.balance);
       }
     },
     ...mapActions('accounts', ['indexAccounts', 'storeAccounts', 'updateAccounts'])
