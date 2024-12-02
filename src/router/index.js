@@ -13,6 +13,8 @@ import CreditCard from '@/views/creditcard';
 
 Vue.use(VueRouter);
 
+const SESSION_KEY = process.env.VUE_APP_SESSION_KEY;
+
 const routes = [
   {
     path: '/lancamentos',
@@ -76,14 +78,6 @@ const routes = [
     component: Dashboard,
     meta: { title: 'Dashboard', icon: 'columns-gap', showDatePicker: true, requiresAuth: true }
   }
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  // }
 ];
 
 const router = new VueRouter({
@@ -93,11 +87,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!sessionStorage.getItem(process.env.VUE_APP_SESSION_KEY);
+  const isAuthenticated = !!sessionStorage.getItem(SESSION_KEY);
   if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
-    router({ name: 'login' });
+    next({ name: 'login' });
   } else if (to.name === 'login' && isAuthenticated) {
-    router({ name: 'dashboard' });
+    next({ name: 'dashboard' });
   } else {
     next();
   }
